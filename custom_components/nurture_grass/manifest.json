@@ -1,7 +1,7 @@
 {
   "domain": "nurture_grass",
   "name": "Nurture Grass Schedule",
-  "version": "0.9.0",
+  "version": "1.0.0-rc1",
   "config_flow": true,
   "documentation": "https://github.com/mrgreaves84/nurture-grass",
   "issue_tracker": "https://github.com/mrgreaves84/nurture-grass/issues",
