@@ -4,10 +4,7 @@ BASE_URL = (
     "https://nurture-webapps.powerappsportals.com"
 )
 
-UPDATE_INTERVAL_HOURS = 24
-
 CONF_POSTCODE = "postcode"
-CONF_SITES = "sites"
 
 CONF_SITE_ID = "site_id"
 CONF_SITE_NAME = "site_name"
