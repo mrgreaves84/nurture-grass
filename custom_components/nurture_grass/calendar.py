@@ -35,8 +35,8 @@ class NurtureMaintenanceCalendar(
     CoordinatorEntity,
     CalendarEntity,
 ):
-    _attr_has_entity_name = True
     _attr_icon = "mdi:calendar-month"
+
     def __init__(
         self,
         coordinator,
@@ -59,14 +59,16 @@ class NurtureMaintenanceCalendar(
             f"{slugify(self.site_name)}_maintenance_calendar"
         )
 
+        events = self._get_events()
+        self._attr_event = events[0] if events else None
+
     @property
     def event(self):
+        return self._attr_event
+
+    async def async_update(self) -> None:
         events = self._get_events()
-
-        if not events:
-            return None
-
-        return events[0]
+        self._attr_event = events[0] if events else None
 
     async def async_get_events(
         self,
@@ -77,11 +79,24 @@ class NurtureMaintenanceCalendar(
         events = []
 
         for event in self._get_events():
-            if (
-                event.start < end_date
-                and event.end > start_date
-            ):
-                events.append(event)
+            range_start = (
+                start_date.date()
+                if hasattr(start_date, "date")
+                else start_date
+            )
+
+            range_end = (
+                end_date.date()
+                if hasattr(end_date, "date")
+                else end_date
+            )
+
+            for event in self._get_events():
+                if (
+                    event.start < range_end
+                    and event.end > range_start
+                ):
+                    events.append(event)
 
         return events
 
@@ -101,7 +116,7 @@ class NurtureMaintenanceCalendar(
                 start = datetime.strptime(
                     clean_date,
                     "%d/%m/%Y",
-                )
+                ).date()
 
                 end = start + timedelta(days=1)
 
