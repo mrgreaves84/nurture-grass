@@ -1,6 +1,4 @@
 """Nurture Grass Schedule."""
-import logging
-_LOGGER = logging.getLogger(__name__)
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -27,7 +25,6 @@ async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
 ) -> bool:
-
     coordinator = NurtureCoordinator(
         hass,
         entry,
@@ -39,8 +36,6 @@ async def async_setup_entry(
         DOMAIN,
         {}
     )[entry.entry_id] = coordinator
-    
-    _LOGGER.warning("NURTURE PLATFORMS LOADING: %s", PLATFORMS)
 
     await hass.config_entries.async_forward_entry_setups(
         entry,
@@ -54,7 +49,6 @@ async def async_unload_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
 ) -> bool:
-
     unloaded = await hass.config_entries.async_unload_platforms(
         entry,
         PLATFORMS,
