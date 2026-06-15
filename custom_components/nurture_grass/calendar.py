@@ -78,25 +78,24 @@ class NurtureMaintenanceCalendar(
     ):
         events = []
 
+        range_start = (
+            start_date.date()
+            if hasattr(start_date, "date")
+            else start_date
+        )
+
+        range_end = (
+            end_date.date()
+            if hasattr(end_date, "date")
+            else end_date
+        )
+
         for event in self._get_events():
-            range_start = (
-                start_date.date()
-                if hasattr(start_date, "date")
-                else start_date
-            )
-
-            range_end = (
-                end_date.date()
-                if hasattr(end_date, "date")
-                else end_date
-            )
-
-            for event in self._get_events():
-                if (
-                    event.start < range_end
-                    and event.end > range_start
-                ):
-                    events.append(event)
+            if (
+                event.start < range_end
+                and event.end > range_start
+            ):
+                events.append(event)
 
         return events
 
