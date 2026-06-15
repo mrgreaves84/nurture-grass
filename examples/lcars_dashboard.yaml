@@ -1,0 +1,103 @@
+type: vertical-stack
+cards:
+  - type: markdown
+    content: |
+      # LCARS GROUNDS MAINTENANCE
+      ### VICO HOMES MAINTENANCE OPERATIONS
+    card_mod:
+      style: |
+        ha-card {
+          background: #101820;
+          color: #ffcc66;
+          border-radius: 24px 24px 0 0;
+          padding: 18px;
+          font-family: Arial Black, sans-serif;
+          letter-spacing: 1px;
+        }
+
+  - type: entities
+    title: NEXT MAINTENANCE WINDOW
+    show_header_toggle: false
+    entities:
+      - entity: sensor.flanshaw_road_next_activity
+        name: Activity
+      - entity: sensor.flanshaw_road_next_activity_date
+        name: Week Commencing
+      - entity: sensor.flanshaw_road_days_until_next_activity
+        name: Days Remaining
+      - entity: binary_sensor.flanshaw_road_grass_cutting_due_soon
+        name: Due Soon
+    card_mod:
+      style: |
+        ha-card {
+          background: #261447;
+          color: #ffffff;
+          border-left: 18px solid #ff9900;
+          border-radius: 0 24px 24px 0;
+        }
+
+  - type: entities
+    title: HISTORICAL ACTIVITY LOG
+    show_header_toggle: false
+    entities:
+      - entity: sensor.flanshaw_road_last_activity
+        name: Last Activity
+      - entity: sensor.flanshaw_road_last_activity_date
+        name: Last Visit
+      - entity: sensor.flanshaw_road_days_since_last_activity
+        name: Days Since
+      - entity: sensor.flanshaw_road_last_refresh
+        name: Last Data Refresh
+    card_mod:
+      style: |
+        ha-card {
+          background: #152238;
+          color: #ffffff;
+          border-left: 18px solid #66ccff;
+          border-radius: 0 24px 24px 0;
+        }
+
+  - type: horizontal-stack
+    cards:
+      - type: button
+        entity: button.flanshaw_road_refresh_schedule
+        name: REFRESH SCHEDULE
+        icon: mdi:refresh
+        tap_action:
+          action: toggle
+        card_mod:
+          style: |
+            ha-card {
+              background: #9944aa;
+              color: #ffffff;
+              border-radius: 24px 0 0 24px;
+              font-weight: bold;
+            }
+
+      - type: button
+        entity: calendar.flanshaw_road_maintenance_calendar
+        name: CALENDAR
+        icon: mdi:calendar-month
+        tap_action:
+          action: more-info
+        card_mod:
+          style: |
+            ha-card {
+              background: #cc6633;
+              color: #ffffff;
+              border-radius: 0 24px 24px 0;
+              font-weight: bold;
+            }
+
+  - type: calendar
+    title: MAINTENANCE CALENDAR
+    entities:
+      - calendar.flanshaw_road_maintenance_calendar
+    card_mod:
+      style: |
+        ha-card {
+          background: #101820;
+          color: #ffffff;
+          border-left: 18px solid #99cc66;
+          border-radius: 0 0 24px 24px;
+        }
