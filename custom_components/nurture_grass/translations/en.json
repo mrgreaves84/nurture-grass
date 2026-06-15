@@ -1,0 +1,62 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Nurture Grass Schedule",
+        "description": "Enter a postcode to find available maintenance sites.",
+        "data": {
+          "postcode": "Postcode"
+        }
+      },
+      "site": {
+        "title": "Select Site",
+        "description": "Choose the site you want to monitor.",
+        "data": {
+          "site_id": "Site"
+        }
+      }
+    },
+    "error": {
+      "no_sites": "No maintenance sites were found for that postcode.",
+      "cannot_connect": "Could not connect to the Nurture schedule website.",
+      "unknown": "An unexpected error occurred."
+    },
+    "abort": {
+      "already_configured": "This site is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Nurture Grass Settings",
+        "description": "Configure how often the maintenance schedule is refreshed.",
+        "data": {
+          "refresh_hours": "Refresh Interval",
+          "notify_days": "Notification Lead Time"
+        }
+      }
+    }
+  },
+  "issues": {
+    "no_activities_found": {
+      "title": "No maintenance activities found",
+      "description": "Nurture Grass Schedule could not find any maintenance activities for the configured site. This may indicate a website change or temporary service issue."
+    },
+    "website_unavailable": {
+      "title": "Nurture website unavailable",
+      "description": "The Nurture Grass Schedule integration could not connect to the Nurture website. This is usually a temporary issue and will be retried automatically."
+    },
+    "date_parse_failed": {
+      "title": "Could not read maintenance date",
+      "description": "Nurture Grass Schedule found maintenance activities, but one or more dates could not be read. The Nurture website may have changed its date format."
+    },
+    "site_not_found": {
+      "title": "Configured site was not found",
+      "description": "Nurture Grass Schedule could not find the configured site on the Nurture website. The site may have been renamed, removed, or the stored site ID may no longer be valid."
+    },
+    "invalid_configuration": {
+      "title": "Configuration is incomplete",
+      "description": "The Nurture Grass Schedule configuration is missing required information. Remove and re-add the integration if this problem persists."
+    }
+  }
+}
