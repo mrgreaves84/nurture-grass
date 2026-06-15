@@ -12,5 +12,5 @@
     "beautifulsoup4>=4.12.3"
   ],
   "iot_class": "cloud_polling",
-  "integration_type": "service"
+  "integration_type": "hub"
 }
