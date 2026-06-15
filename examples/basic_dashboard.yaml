@@ -2,18 +2,23 @@ type: entities
 title: Vico Homes Grounds Maintenance
 show_header_toggle: false
 entities:
+  - entity: sensor.flanshaw_road_next_activity
+    name: Next Activity
 
-* entity: sensor.flanshaw_road_next_activity
-  name: Next Activity
+  - entity: sensor.flanshaw_road_next_activity_date
+    name: Next Activity Date
 
-* entity: sensor.flanshaw_road_next_activity_date
-  name: Next Activity Date
+  - entity: sensor.flanshaw_road_days_until_next_activity
+    name: Days Until Next Activity
 
-* entity: sensor.flanshaw_road_days_until_next_activity
-  name: Days Until Next Activity
+  - entity: sensor.flanshaw_road_last_activity
+    name: Last Activity
 
-* entity: sensor.flanshaw_road_last_refresh
-  name: Last Refresh
+  - entity: sensor.flanshaw_road_days_since_last_activity
+    name: Days Since Last Activity
 
-* entity: button.flanshaw_road_refresh_schedule
-  name: Refresh Schedule
+  - entity: sensor.flanshaw_road_last_refresh
+    name: Last Refresh
+
+  - entity: button.flanshaw_road_refresh_schedule
+    name: Refresh Schedule
