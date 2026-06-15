@@ -43,26 +43,37 @@ class NurtureGrassConfigFlow(
 
         if user_input is not None:
             self._postcode = user_input[CONF_POSTCODE].strip()
-            self._sites = await self._async_find_sites(self._postcode)
 
-            if len(self._sites) == 0:
-                errors["base"] = "no_sites"
-
-            elif len(self._sites) == 1:
-                site_id = next(iter(self._sites))
-                site_name = self._sites[site_id]
-
-                return self.async_create_entry(
-                    title=clean_site_name(site_name),
-                    data={
-                        CONF_POSTCODE: self._postcode,
-                        CONF_SITE_ID: site_id,
-                        CONF_SITE_NAME: site_name,
-                    },
+            try:
+                self._sites = await self._async_find_sites(
+                    self._postcode
                 )
-
+            except aiohttp.ClientError:
+                errors["base"] = "cannot_connect"
+            except Exception:
+                errors["base"] = "unknown"
             else:
-                return await self.async_step_site()
+                if len(self._sites) == 0:
+                    errors["base"] = "no_sites"
+
+                elif len(self._sites) == 1:
+                    site_id = next(iter(self._sites))
+                    site_name = self._sites[site_id]
+
+                    await self.async_set_unique_id(site_id)
+                    self._abort_if_unique_id_configured()
+
+                    return self.async_create_entry(
+                        title=clean_site_name(site_name),
+                        data={
+                            CONF_POSTCODE: self._postcode,
+                            CONF_SITE_ID: site_id,
+                            CONF_SITE_NAME: site_name,
+                        },
+                    )
+
+                else:
+                    return await self.async_step_site()
 
         return self.async_show_form(
             step_id="user",
@@ -78,6 +89,9 @@ class NurtureGrassConfigFlow(
         if user_input is not None:
             site_id = user_input[CONF_SITE_ID]
             site_name = self._sites[site_id]
+
+            await self.async_set_unique_id(site_id)
+            self._abort_if_unique_id_configured()
 
             return self.async_create_entry(
                 title=clean_site_name(site_name),
@@ -108,6 +122,7 @@ class NurtureGrassConfigFlow(
                 url,
                 headers={"User-Agent": "Mozilla/5.0"},
             ) as response:
+                response.raise_for_status()
                 html = await response.text()
 
         soup = BeautifulSoup(html, "html.parser")
