@@ -20,6 +20,7 @@ from .const import (
     DEFAULT_REFRESH_HOURS,
     DOMAIN,
 )
+from .utils import clean_site_name
 
 
 class NurtureGrassConfigFlow(
@@ -52,7 +53,7 @@ class NurtureGrassConfigFlow(
                 site_name = self._sites[site_id]
 
                 return self.async_create_entry(
-                    title=site_name,
+                    title=clean_site_name(site_name),
                     data={
                         CONF_POSTCODE: self._postcode,
                         CONF_SITE_ID: site_id,
@@ -79,7 +80,7 @@ class NurtureGrassConfigFlow(
             site_name = self._sites[site_id]
 
             return self.async_create_entry(
-                title=site_name,
+                title=clean_site_name(site_name),
                 data={
                     CONF_POSTCODE: self._postcode,
                     CONF_SITE_ID: site_id,
