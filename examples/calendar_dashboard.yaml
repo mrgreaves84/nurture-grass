@@ -1,5 +1,4 @@
 type: calendar
+title: Grounds Maintenance Calendar
 entities:
-
-* calendar.flanshaw_road_maintenance_calendar
-  title: Grounds Maintenance Calendar
+  - calendar.flanshaw_road_maintenance_calendar
