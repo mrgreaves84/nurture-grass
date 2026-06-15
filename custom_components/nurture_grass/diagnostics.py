@@ -34,7 +34,7 @@ async def async_get_config_entry_diagnostics(
     diagnostics = {
         "integration": {
             "domain": DOMAIN,
-            "version": "0.9.0",
+            "version": "1.0.0-rc1",
             "data_source": "Nurture Landscapes",
         },
         "config_entry": {
