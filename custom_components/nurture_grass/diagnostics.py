@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from .utils import clean_site_name
-
 from homeassistant.components.diagnostics import async_redact_data
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -16,10 +14,14 @@ from .const import (
     DEFAULT_REFRESH_HOURS,
     DOMAIN,
 )
+from .utils import clean_site_name
 
 TO_REDACT = {
     CONF_POSTCODE,
     CONF_SITE_ID,
+    CONF_SITE_NAME,
+    "title",
+    "clean_site_name",
 }
 
 
