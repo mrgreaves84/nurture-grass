@@ -31,7 +31,7 @@ async def async_setup_entry(
 
 
 class NurtureRefreshButton(ButtonEntity):
-    _attr_has_entity_name = True
+
     _attr_icon = "mdi:refresh"
     def __init__(
         self,
