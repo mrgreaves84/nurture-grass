@@ -25,6 +25,11 @@ from .repairs import (
     create_invalid_config_issue,
     delete_invalid_config_issue,
 )
+from .utils import (
+    NEXT_VISIT_PARSE_FAILURE_STATUSES,
+    normalise_next_visit,
+    parse_portal_date,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -140,25 +145,21 @@ class NurtureCoordinator(DataUpdateCoordinator):
             next_visit = cells[2].get_text(strip=True)
 
             if activity:
-                for date_value in (
-                    last_visit,
-                    next_visit.replace(
-                        "Week commencing:",
-                        "",
-                    ).strip(),
+                next_visit_data = normalise_next_visit(next_visit)
+
+                if parse_portal_date(last_visit) is None:
+                    date_parse_failed = True
+
+                if (
+                    next_visit_data["next_visit_status"]
+                    in NEXT_VISIT_PARSE_FAILURE_STATUSES
                 ):
-                    try:
-                        datetime.strptime(
-                            date_value,
-                            "%d/%m/%Y",
-                        )
-                    except Exception:
-                        date_parse_failed = True
+                    date_parse_failed = True
 
                 activities[activity] = {
                     "name": activity,
                     "last_visit": last_visit,
-                    "next_visit": next_visit,
+                    **next_visit_data,
                 }
 
         if not activities:

@@ -19,6 +19,7 @@
     "error": {
       "no_sites": "No maintenance sites were found for that postcode.",
       "cannot_connect": "Could not connect to the Nurture schedule website.",
+      "invalid_postcode": "Enter a UK postcode, for example WF2 9ET. Spaces and capitalisation do not matter.",
       "unknown": "An unexpected error occurred."
     },
     "abort": {

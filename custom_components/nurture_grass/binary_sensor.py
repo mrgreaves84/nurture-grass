@@ -13,7 +13,11 @@ from .const import (
     DEFAULT_NOTIFY_DAYS,
     DOMAIN,
 )
-from .utils import clean_site_name
+from .utils import (
+    NEXT_VISIT_SCHEDULED,
+    clean_site_name,
+    parse_portal_date,
+)
 
 
 async def async_setup_entry(
@@ -91,36 +95,25 @@ class ActivityDueSoonBinarySensor(
             {},
         )
 
-        date_text = activity.get(
-            "next_visit",
-            "",
+        if activity.get("next_visit_status") != NEXT_VISIT_SCHEDULED:
+            return False
+
+        next_date = parse_portal_date(
+            activity.get("next_visit_raw")
+        )
+        if next_date is None:
+            return False
+
+        days = (
+            next_date
+            - datetime.now().date()
+        ).days
+
+        notify_days = (
+            self.coordinator.config_entry.options.get(
+                CONF_NOTIFY_DAYS,
+                DEFAULT_NOTIFY_DAYS,
+            )
         )
 
-        try:
-            date_text = (
-                date_text
-                .replace("Week commencing:", "")
-                .strip()
-            )
-
-            next_date = datetime.strptime(
-                date_text,
-                "%d/%m/%Y",
-            ).date()
-
-            days = (
-                next_date
-                - datetime.now().date()
-            ).days
-
-            notify_days = (
-                self.coordinator.config_entry.options.get(
-                    CONF_NOTIFY_DAYS,
-                    DEFAULT_NOTIFY_DAYS,
-                )
-            )
-
-            return days <= notify_days
-
-        except Exception:
-            return False
+        return days <= notify_days

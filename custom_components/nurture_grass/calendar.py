@@ -1,5 +1,3 @@
-from datetime import datetime, timedelta
-
 from homeassistant.components.calendar import (
     CalendarEntity,
     CalendarEvent,
@@ -11,7 +9,12 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import slugify
 
 from .const import DOMAIN, CONF_SITE_NAME
-from .utils import clean_site_name
+from .utils import (
+    NEXT_VISIT_SCHEDULED,
+    clean_site_name,
+    parse_portal_date,
+    week_commencing_window,
+)
 
 
 async def async_setup_entry(
@@ -103,41 +106,33 @@ class NurtureMaintenanceCalendar(
         events = []
 
         for activity_name, activity in self.coordinator.data.items():
-            date_text = activity.get("next_visit", "")
-
-            try:
-                clean_date = (
-                    date_text
-                    .replace("Week commencing:", "")
-                    .strip()
-                )
-
-                start = datetime.strptime(
-                    clean_date,
-                    "%d/%m/%Y",
-                ).date()
-
-                end = start + timedelta(days=1)
-
-                events.append(
-                    CalendarEvent(
-                        summary=(
-                            f"{activity_name} - "
-                            f"{self.site_name}"
-                        ),
-                        start=start,
-                        end=end,
-                        description=(
-                            f"{activity_name} scheduled "
-                            f"for week commencing "
-                            f"{clean_date}."
-                        ),
-                        location=self.site_name,
-                    )
-                )
-
-            except Exception:
+            if activity.get("next_visit_status") != NEXT_VISIT_SCHEDULED:
                 continue
+
+            start = parse_portal_date(activity.get("next_visit_raw"))
+
+            if start is None:
+                continue
+
+            start, end = week_commencing_window(start)
+            clean_date = start.strftime("%d/%m/%Y")
+
+            events.append(
+                CalendarEvent(
+                    summary=(
+                        f"{activity_name} - "
+                        f"{self.site_name}"
+                    ),
+                    start=start,
+                    end=end,
+                    description=(
+                        f"{activity_name} is planned for the week "
+                        f"commencing {clean_date}. The exact attendance "
+                        "date is not supplied by the portal."
+                    ),
+                    location=self.site_name,
+                )
+            )
 
         return sorted(
             events,

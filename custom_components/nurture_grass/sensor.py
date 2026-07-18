@@ -13,7 +13,11 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import slugify
 
 from .const import DOMAIN, CONF_SITE_NAME
-from .utils import clean_site_name
+from .utils import (
+    NEXT_VISIT_SCHEDULED,
+    clean_site_name,
+    parse_portal_date,
+)
 
 
 async def async_setup_entry(
@@ -83,6 +87,14 @@ class ActivityNextVisitSensor(ActivityBaseSensor):
     def native_value(self):
         return self.activity.get("next_visit", "Unknown")
 
+    @property
+    def extra_state_attributes(self):
+        return {
+            "raw_value": self.activity.get("next_visit_raw"),
+            "status": self.activity.get("next_visit_status"),
+            "date": self.activity.get("next_visit_date"),
+        }
+
 
 class ActivityLastVisitSensor(ActivityBaseSensor):
     _attr_icon = "mdi:calendar-check"
@@ -113,15 +125,16 @@ class ActivityDaysUntilSensor(ActivityBaseSensor):
 
     @property
     def native_value(self):
-        date_text = self.activity.get("next_visit", "")
-
-        try:
-            date_text = date_text.replace("Week commencing:", "").strip()
-            next_date = datetime.strptime(date_text, "%d/%m/%Y").date()
-            return (next_date - datetime.now().date()).days
-
-        except Exception:
+        if self.activity.get("next_visit_status") != NEXT_VISIT_SCHEDULED:
             return None
+
+        next_date = parse_portal_date(
+            self.activity.get("next_visit_raw")
+        )
+        if next_date is None:
+            return None
+
+        return (next_date - datetime.now().date()).days
 
 
 class LastRefreshSensor(CoordinatorEntity, SensorEntity):
@@ -166,19 +179,18 @@ class NextActivitySensor(CoordinatorEntity, SensorEntity):
         soonest_next_visit = None
 
         for activity_name, activity in self.coordinator.data.items():
-            date_text = activity.get("next_visit", "")
-
-            try:
-                cleaned_date = date_text.replace("Week commencing:", "").strip()
-                next_date = datetime.strptime(cleaned_date, "%d/%m/%Y").date()
-
-                if soonest_date is None or next_date < soonest_date:
-                    soonest_date = next_date
-                    soonest_activity = activity_name
-                    soonest_next_visit = date_text
-
-            except Exception:
+            if activity.get("next_visit_status") != NEXT_VISIT_SCHEDULED:
                 continue
+
+            date_text = activity.get("next_visit_raw", "")
+            next_date = parse_portal_date(date_text)
+            if next_date is None:
+                continue
+
+            if soonest_date is None or next_date < soonest_date:
+                soonest_date = next_date
+                soonest_activity = activity_name
+                soonest_next_visit = date_text
 
         return soonest_activity, soonest_date, soonest_next_visit
 
@@ -280,18 +292,15 @@ class LastActivitySensor(CoordinatorEntity, SensorEntity):
 
         for activity_name, activity in self.coordinator.data.items():
             date_text = activity.get("last_visit", "")
+            last_date = parse_portal_date(date_text)
 
-            try:
-                cleaned_date = date_text.replace("Week commencing:", "").strip()
-                last_date = datetime.strptime(cleaned_date, "%d/%m/%Y").date()
-
-                if latest_date is None or last_date > latest_date:
-                    latest_date = last_date
-                    latest_activity = activity_name
-                    latest_last_visit = date_text
-
-            except Exception:
+            if last_date is None:
                 continue
+
+            if latest_date is None or last_date > latest_date:
+                latest_date = last_date
+                latest_activity = activity_name
+                latest_last_visit = date_text
 
         return latest_activity, latest_date, latest_last_visit
 

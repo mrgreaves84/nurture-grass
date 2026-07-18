@@ -3,6 +3,7 @@ from __future__ import annotations
 from homeassistant.components.diagnostics import async_redact_data
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.loader import async_get_integration
 
 from .const import (
     CONF_NOTIFY_DAYS,
@@ -30,11 +31,12 @@ async def async_get_config_entry_diagnostics(
     entry: ConfigEntry,
 ) -> dict:
     coordinator = hass.data[DOMAIN][entry.entry_id]
+    integration = await async_get_integration(hass, DOMAIN)
 
     diagnostics = {
         "integration": {
             "domain": DOMAIN,
-            "version": "1.0.0-rc1",
+            "version": integration.version,
             "data_source": "Nurture Landscapes",
         },
         "config_entry": {

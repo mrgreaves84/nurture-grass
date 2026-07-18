@@ -20,7 +20,7 @@ from .const import (
     DEFAULT_REFRESH_HOURS,
     DOMAIN,
 )
-from .utils import clean_site_name
+from .utils import clean_site_name, normalise_postcode
 
 
 class NurtureGrassConfigFlow(
@@ -42,17 +42,24 @@ class NurtureGrassConfigFlow(
         errors = {}
 
         if user_input is not None:
-            self._postcode = user_input[CONF_POSTCODE].strip()
-
             try:
-                self._sites = await self._async_find_sites(
-                    self._postcode
+                self._postcode = normalise_postcode(
+                    user_input[CONF_POSTCODE]
                 )
-            except aiohttp.ClientError:
-                errors["base"] = "cannot_connect"
-            except Exception:
-                errors["base"] = "unknown"
-            else:
+            except ValueError:
+                errors[CONF_POSTCODE] = "invalid_postcode"
+
+            if not errors:
+                try:
+                    self._sites = await self._async_find_sites(
+                        self._postcode
+                    )
+                except aiohttp.ClientError:
+                    errors["base"] = "cannot_connect"
+                except Exception:
+                    errors["base"] = "unknown"
+
+            if not errors:
                 if len(self._sites) == 0:
                     errors["base"] = "no_sites"
 
